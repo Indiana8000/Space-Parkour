@@ -11,21 +11,33 @@ import SpriteKit
 class MenuScene: SKScene {
     
     let playButton = SKSpriteNode(imageNamed: "play_buttons")
+    let scoreLabel = SKLabelNode(fontNamed: "Arial")
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .black
         
         playButton.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
         addChild(playButton)
+        
+        scoreLabel.fontSize = 26
+        if currentScore > 0 {
+            scoreLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2 - 100)
+            scoreLabel.text = "Gamescore: \(currentScore)"
+            addChild(scoreLabel)
+        } else if UserDefaults.standard.integer(forKey: "HIGHSCORE") > 0 {
+            scoreLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2 + 100)
+            scoreLabel.text = "Highscore: \(UserDefaults.standard.integer(forKey: "HIGHSCORE"))"
+            addChild(scoreLabel)
+        }
+        
     }
-
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let locationUser = touch.location(in: self)
 
             if atPoint(locationUser) == playButton {
-                let transition = SKTransition.doorsCloseHorizontal(withDuration: 2)
+                let transition = SKTransition.doorsOpenHorizontal(withDuration: 2)
                 let gScene = GameScene(size: self.size)
                 self.view?.presentScene(gScene, transition: transition)
             }

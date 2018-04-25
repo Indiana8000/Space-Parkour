@@ -25,6 +25,8 @@
 		A1E9AC8F20909DB700D3761D /* 7.png in Resources */ = {isa = PBXBuildFile; fileRef = A1E9AC8620909DB700D3761D /* 7.png */; };
 		A1E9AC9020909DB700D3761D /* 8.png in Resources */ = {isa = PBXBuildFile; fileRef = A1E9AC8720909DB700D3761D /* 8.png */; };
 		A1E9AC9120909DB700D3761D /* spaceship_enemy_start.png in Resources */ = {isa = PBXBuildFile; fileRef = A1E9AC8820909DB700D3761D /* spaceship_enemy_start.png */; };
+		A1E9AC952090B09300D3761D /* explosion.wav in Resources */ = {isa = PBXBuildFile; fileRef = A1E9AC942090B09300D3761D /* explosion.wav */; };
+		A1E9AC9B2090B21D00D3761D /* enemyFire.sks in Resources */ = {isa = PBXBuildFile; fileRef = A1E9AC9A2090B21D00D3761D /* enemyFire.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,9 @@
 		A1E9AC8620909DB700D3761D /* 7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 7.png; sourceTree = "<group>"; };
 		A1E9AC8720909DB700D3761D /* 8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 8.png; sourceTree = "<group>"; };
 		A1E9AC8820909DB700D3761D /* spaceship_enemy_start.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spaceship_enemy_start.png; sourceTree = "<group>"; };
+		A1E9AC942090B09300D3761D /* explosion.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = explosion.wav; sourceTree = "<group>"; };
+		A1E9AC9A2090B21D00D3761D /* enemyFire.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = enemyFire.sks; sourceTree = "<group>"; };
+		A1E9AC9C2090D8D200D3761D /* Space Parkour.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Space Parkour.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +85,7 @@
 		A16809E720906F9600663B93 /* Space Parkour */ = {
 			isa = PBXGroup;
 			children = (
+				A1E9AC9C2090D8D200D3761D /* Space Parkour.entitlements */,
 				A16809E820906F9600663B93 /* AppDelegate.swift */,
 				A16809F020906F9600663B93 /* SP_GameViewController.swift */,
 				A1680A002090712C00663B93 /* SP_MenuScene.swift */,
@@ -98,7 +104,9 @@
 				A16809F520906F9600663B93 /* Assets.xcassets */,
 				A1E9AC7F20909DB700D3761D /* Enemy_animation */,
 				A1E9AC7D2090987C00D3761D /* sfx_laser1.wav */,
+				A1E9AC942090B09300D3761D /* explosion.wav */,
 				A1680A03209094F200663B93 /* Broke_For_Free_-_01_-_Night_Owl.mp3 */,
+				A1E9AC9A2090B21D00D3761D /* enemyFire.sks */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";
@@ -152,6 +160,11 @@
 					A16809E420906F9600663B93 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};
@@ -178,6 +191,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1E9AC9B2090B21D00D3761D /* enemyFire.sks in Resources */,
+				A1E9AC952090B09300D3761D /* explosion.wav in Resources */,
 				A1E9AC8E20909DB700D3761D /* 6.png in Resources */,
 				A1E9AC8C20909DB700D3761D /* 4.png in Resources */,
 				A1E9AC9120909DB700D3761D /* spaceship_enemy_start.png in Resources */,
