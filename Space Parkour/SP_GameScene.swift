@@ -9,29 +9,27 @@
 import SpriteKit
 import AVFoundation
 
-var currentScore = 0
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    // MARK: - Properties
+    let spaceship        = SKSpriteNode(imageNamed: "playerShip1_blue")
+    var spaceshipDamage  = SKSpriteNode(imageNamed: "playerShip1_damage3")
+    var touchTarget: CGFloat = 0
+
     let spaceshipTexture = SKTexture(imageNamed: "playerShip1_blue")
-    let spaceship = SKSpriteNode(imageNamed: "playerShip1_blue")
-    var touchTarget = 0 as CGFloat
-    var spaceshipDamage = SKSpriteNode(imageNamed: "playerShip1_damage3")
-    
-    let bulletTexture = SKTexture(imageNamed: "bullet")
-    let enemyTexture = SKTexture(imageNamed: "spaceship_enemy_start")
+    let bulletTexture    = SKTexture(imageNamed: "bullet")
+    let enemyTexture     = SKTexture(imageNamed: "spaceship_enemy_start")
 
-    let background1 = SKSpriteNode(imageNamed: "background")
-    let background2 = SKSpriteNode(imageNamed: "background")
+    let background1      = SKSpriteNode(imageNamed: "background")
+    let background2      = SKSpriteNode(imageNamed: "background")
 
-    let optionMusic = SKSpriteNode(imageNamed: "194-note-2")
-    
-    let highScoreLabe = SKLabelNode(fontNamed: "Arial")
+    var liveNodes        = [SKSpriteNode]()
+    let optionMusic      = SKSpriteNode(imageNamed: "194-note-2")
+    let highScoreLabe    = SKLabelNode(fontNamed: "Arial")
     let currentScoreLabe = SKLabelNode(fontNamed: "Arial")
-    var highScore = UserDefaults.standard.integer(forKey: "HIGHSCORE")
+    var highScore        = UserDefaults.standard.integer(forKey: "HIGHSCORE")
 
-    var liveNodes = [SKSpriteNode]()
-    
     var timerEnemy = Timer()
     var enemyDelay = 3.0
     
@@ -41,16 +39,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         static let enemyNumber: UInt32 = 0b100
         static let emptyNumber: UInt32 = 0b1000
     }
+
     
+    // MARK: - Init
     override func didMove(to view: SKView) {
         self.backgroundColor = .black
-        //self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         self.physicsWorld.contactDelegate = self
         
         spaceship.position = CGPoint(x: self.size.width/2, y: spaceship.size.height*2)
         spaceship.zPosition = 2
         spaceship.physicsBody = SKPhysicsBody(texture: spaceshipTexture, size: spaceship.size)
-        //spaceship.physicsBody?.isDynamic = false
         spaceship.physicsBody?.affectedByGravity = false;
         spaceship.physicsBody?.categoryBitMask = physicsBodyNumbers.spaceshipNumber
         spaceship.physicsBody?.collisionBitMask = physicsBodyNumbers.emptyNumber
@@ -73,9 +71,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         optionMusic.setScale(0.8)
         if audioPlayer.isPlaying {
-            optionMusic.color = .red;
-        } else {
             optionMusic.color = .green;
+        } else {
+            optionMusic.color = .red;
         }
         optionMusic.colorBlendFactor = 0.8
         optionMusic.position = CGPoint(x: self.size.width - optionMusic.size.width - 15, y: optionMusic.size.height + 15)
@@ -84,26 +82,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         highScoreLabe.fontSize = 16
         highScoreLabe.text = "Highscore: \(highScore)"
-        highScoreLabe.zPosition = 6
+        highScoreLabe.zPosition = 9
         highScoreLabe.position = CGPoint(x: self.size.width - highScoreLabe.frame.size.width, y: self.size.height - highScoreLabe.frame.size.height)
         addChild(highScoreLabe)
 
         currentScore = 0
         currentScoreLabe.fontSize = 16
         currentScoreLabe.text = "Gamescore: \(currentScore)"
-        currentScoreLabe.zPosition = 6
+        currentScoreLabe.zPosition = 9
         currentScoreLabe.position = CGPoint(x: self.size.width - highScoreLabe.frame.size.width, y: self.size.height - highScoreLabe.frame.size.height * 2)
         addChild(currentScoreLabe)
 
-        
         addLiveToSpaceship(liveNum: 4)
         
-        timerEnemy = Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: { (Timer) in
+        timerEnemy = Timer.scheduledTimer(withTimeInterval: 3.5, repeats: false, block: { (Timer) in
             self.addEnemy()
         })
     }
     
     
+    // MARK: - Touch
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let locationUser = touch.location(in: self)
@@ -117,7 +115,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let locationUser = touch.location(in: self)
             touchTarget = locationUser.x
             
-            if ((atPoint(locationUser) == spaceship) || (atPoint(locationUser) == spaceshipDamage)) {
+            if locationUser.y < spaceship.position.x + spaceship.size.height {
                 addBulletToSpaceship()
             }
 
@@ -130,7 +128,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     audioPlayer.play()
                 }
             }
-
         }
     }
     
@@ -140,6 +137,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    // MARK: - SpriteKit
     override func update(_ currentTime: TimeInterval) {
         if touchTarget < spaceship.position.x-5 {
             spaceship.position.x -= CGFloat(currentTime/1000)
@@ -169,15 +167,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    var contactBegin: Bool = true
     
+    var contactBeginBullet: Bool = true
+    var contactBeginPlayer: Bool = true
+
     func didBegin(_ contact: SKPhysicsContact) {
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         switch contactMask {
         case physicsBodyNumbers.enemyNumber | physicsBodyNumbers.bulletNumber:
-            if contactBegin {
-                contactBegin = false
+            if contactBeginBullet {
+                contactBeginBullet = false
                 if (contact.bodyA.categoryBitMask & physicsBodyNumbers.enemyNumber) > 0 {
                     addExplosion(contactPoint: contact.bodyA.node!.position)
                 } else {
@@ -190,8 +190,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 addEnemy()
             }
         case physicsBodyNumbers.enemyNumber | physicsBodyNumbers.spaceshipNumber:
-            if contactBegin {
-                contactBegin = false
+            if contactBeginPlayer {
+                contactBeginPlayer = false
                 addExplosion(contactPoint: contact.bodyB.node!.position)
                 contact.bodyB.node?.removeFromParent()
                 
@@ -208,12 +208,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                             SKAction.fadeAlpha(to: 0.1, duration: 0.1),
                             SKAction.fadeAlpha(to: 1.0, duration: 0.1)
                             ]), count: 5))
-
+                        
                         spaceshipDamage.removeFromParent()
                         spaceshipDamage = SKSpriteNode(imageNamed: "playerShip1_damage\(liveNodes.count)")
                         spaceshipDamage.zPosition = 3
                         spaceshipDamage.position = spaceship.position
                         self.addChild(spaceshipDamage)
+                        spaceshipDamage.run(SKAction.repeat(SKAction.sequence([
+                            SKAction.fadeAlpha(to: 0.1, duration: 0.1),
+                            SKAction.fadeAlpha(to: 1.0, duration: 0.1)
+                            ]), count: 5))
+
                         addEnemy()
                     }
                 }
@@ -223,18 +228,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    
     func didEnd(_ contact: SKPhysicsContact) {
-        contactBegin = true
+        let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
+        
+        switch contactMask {
+        case physicsBodyNumbers.enemyNumber | physicsBodyNumbers.bulletNumber:
+            contactBeginBullet = true
+        case physicsBodyNumbers.enemyNumber | physicsBodyNumbers.spaceshipNumber:
+            contactBeginPlayer = true
+        default:
+            print("nothing")
+        }
     }
     
+    
+    // MARK: - Others
     func gameOver() {
         timerEnemy.invalidate()
-        self.run(SKAction.wait(forDuration: 0.5)) {
-            let transition = SKTransition.doorsCloseHorizontal(withDuration: 2)
+        self.run(SKAction.wait(forDuration: 0.3)) {
+            let transition = SKTransition.doorsCloseHorizontal(withDuration: 1.3)
             let gScene = MenuScene(size: self.size)
             self.view?.presentScene(gScene, transition: transition)
         }
     }
+    
     
     func addExplosion(contactPoint: CGPoint) {
         let explosion = SKEmitterNode(fileNamed: "enemyFire.sks")!
@@ -247,6 +265,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         self.run(SKAction.playSoundFileNamed("explosion", waitForCompletion: true))
     }
+    
     
     func addBulletToSpaceship() {
         let bullet = SKSpriteNode(imageNamed: "bullet")
@@ -266,6 +285,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bullet.run(SKAction.playSoundFileNamed("sfx_laser1", waitForCompletion: true))
     }
     
+    
     func addEnemy() {
         timerEnemy.invalidate()
         var enemyArray = [SKTexture]()
@@ -278,7 +298,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         enemy.position = CGPoint(x: CGFloat(arc4random_uniform(UInt32(self.size.width - enemy.size.width)) + UInt32(enemy.size.width / 2.0)), y: self.size.height + enemy.size.height)
         enemy.zRotation = CGFloat(Double.pi)
         enemy.physicsBody = SKPhysicsBody(texture: enemyTexture, size: enemy.size)
-        //enemy.physicsBody?.isDynamic = false
         enemy.physicsBody?.affectedByGravity = false;
         enemy.physicsBody?.categoryBitMask = physicsBodyNumbers.enemyNumber
         enemy.physicsBody?.collisionBitMask = physicsBodyNumbers.emptyNumber
@@ -307,9 +326,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         })
     }
     
+    
     func addLiveToSpaceship(liveNum: Int) {
         for index in 0..<liveNum {
             let liveNode = SKSpriteNode(imageNamed: "playerShip1_blue")
+            liveNode.zPosition = 9
             liveNode.anchorPoint = CGPoint(x: 0, y: 1)
             liveNode.setScale(0.3)
             liveNode.position.x = CGFloat(index) * (liveNode.size.width + 3) + 3
@@ -318,6 +339,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             liveNodes.append(liveNode)
         }
     }
+    
     
     func updateCurrentScore(points: Int) {
         currentScore += points;

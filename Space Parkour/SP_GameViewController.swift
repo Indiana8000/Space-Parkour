@@ -10,7 +10,10 @@ import UIKit
 import SpriteKit
 import AVFoundation
 
+
 var audioPlayer = AVAudioPlayer()
+var currentScore = 0
+
 
 class GameViewController: UIViewController {
 
@@ -18,18 +21,18 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {
+            view.ignoresSiblingOrder = true
+            //view.showsFPS = true
+            //view.showsNodeCount = true
+            //view.showsPhysics = true
+
             let gScene = MenuScene(size: self.view.bounds.size)
             view.presentScene(gScene)
-            
-            view.ignoresSiblingOrder = true
-            view.showsFPS = true
-            view.showsNodeCount = true
-            //view.showsPhysics = true
         }
 
-        let x = Bundle.main.url(forResource: "Broke_For_Free_-_01_-_Night_Owl", withExtension: "mp3")
+        let musicFile = Bundle.main.url(forResource: "Broke_For_Free_-_01_-_Night_Owl", withExtension: "mp3")
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf: x!)
+            audioPlayer = try AVAudioPlayer(contentsOf: musicFile!)
         } catch {
             print("Missing Audio")
         }
