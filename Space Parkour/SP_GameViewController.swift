@@ -19,15 +19,17 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .black
         
         if let view = self.view as! SKView? {
             view.ignoresSiblingOrder = true
-            //view.showsFPS = true
-            //view.showsNodeCount = true
+            view.showsFPS = true
+            view.showsNodeCount = true
             //view.showsPhysics = true
 
-            let gScene = MenuScene(size: self.view.bounds.size)
-            view.presentScene(gScene)
+            let mScene = MenuScene(size: CGSize(width: 320, height: 568))
+            mScene.scaleMode = .aspectFit
+            view.presentScene(mScene)
         }
 
         let musicFile = Bundle.main.url(forResource: "Broke_For_Free_-_01_-_Night_Owl", withExtension: "mp3")

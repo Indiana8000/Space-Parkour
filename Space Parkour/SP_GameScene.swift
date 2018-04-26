@@ -19,7 +19,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     let spaceshipTexture = SKTexture(imageNamed: "playerShip1_blue")
     let bulletTexture    = SKTexture(imageNamed: "bullet")
-    let enemyTexture     = SKTexture(imageNamed: "spaceship_enemy_start")
+    let enemyTexture     = SKTexture(imageNamed: "enemyGreen1")
 
     let background1      = SKSpriteNode(imageNamed: "background")
     let background2      = SKSpriteNode(imageNamed: "background")
@@ -138,9 +138,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     // MARK: - SpriteKit
+    var lastUpdateTime = 0.0
+    var deltaUpdateTime = 0.0
     override func update(_ currentTime: TimeInterval) {
+        deltaUpdateTime = currentTime - lastUpdateTime
+        lastUpdateTime = currentTime
         if touchTarget < spaceship.position.x-5 {
-            spaceship.position.x -= CGFloat(currentTime/1000)
+            spaceship.position.x -= CGFloat(deltaUpdateTime * 350)
             if spaceship.position.x < touchTarget {
                 spaceship.position.x = touchTarget
             }
@@ -148,7 +152,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 spaceshipDamage.position = spaceship.position
             }
         } else if touchTarget > spaceship.position.x+5 {
-            spaceship.position.x += CGFloat(currentTime/1000)
+            spaceship.position.x += CGFloat(deltaUpdateTime * 350)
             if spaceship.position.x > touchTarget {
                 spaceship.position.x = touchTarget
             }
@@ -157,8 +161,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        background1.position.y -= CGFloat(currentTime/18000)
-        background2.position.y -= CGFloat(currentTime/18000)
+        if deltaUpdateTime < 1 {
+            background1.position.y -= CGFloat(deltaUpdateTime * 60)
+            background2.position.y -= CGFloat(deltaUpdateTime * 60)
+        }
         if background1.position.y < -background1.size.height {
             background1.position.y = background2.position.y + background2.size.height - 1
         }
@@ -248,8 +254,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         timerEnemy.invalidate()
         self.run(SKAction.wait(forDuration: 0.3)) {
             let transition = SKTransition.doorsCloseHorizontal(withDuration: 1.3)
-            let gScene = MenuScene(size: self.size)
-            self.view?.presentScene(gScene, transition: transition)
+            let mScene = MenuScene(size: self.size)
+            mScene.scaleMode = .aspectFit
+            self.view?.presentScene(mScene, transition: transition)
         }
     }
     
@@ -288,15 +295,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func addEnemy() {
         timerEnemy.invalidate()
-        var enemyArray = [SKTexture]()
-        for index in 1...8 {
-            enemyArray.append(SKTexture(imageNamed: "\(index)"))
-        }
-        let enemy = SKSpriteNode(imageNamed: "spaceship_enemy_start")
-        enemy.setScale(0.15)
+
+        let enemy = SKSpriteNode(imageNamed: "enemyGreen1")
+        //enemy.setScale(0.15)
 
         enemy.position = CGPoint(x: CGFloat(arc4random_uniform(UInt32(self.size.width - enemy.size.width)) + UInt32(enemy.size.width / 2.0)), y: self.size.height + enemy.size.height)
-        enemy.zRotation = CGFloat(Double.pi)
+        //enemy.zRotation = CGFloat(Double.pi)
         enemy.physicsBody = SKPhysicsBody(texture: enemyTexture, size: enemy.size)
         enemy.physicsBody?.affectedByGravity = false;
         enemy.physicsBody?.categoryBitMask = physicsBodyNumbers.enemyNumber
@@ -304,7 +308,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         enemy.physicsBody?.contactTestBitMask = physicsBodyNumbers.spaceshipNumber | physicsBodyNumbers.bulletNumber
 
         addChild(enemy)
-        enemy.run(SKAction.repeatForever(SKAction.animate(with: enemyArray, timePerFrame: 0.1)))
         let moveTo = SKAction.moveTo(y: -enemy.size.height, duration: enemyDelay)
         let delete = SKAction.removeFromParent()
         enemy.run(SKAction.sequence([moveTo, delete])) {
@@ -314,12 +317,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     SKAction.colorize(with: SKColor.red, colorBlendFactor: 0.5, duration: 0.1),
                     SKAction.colorize(with: SKColor.clear, colorBlendFactor: 0.0, duration: 0.1),
                     ])
-                    , count: 5)
+                    , count: 2)
             )
         }
 
         if enemyDelay > 0.8 {
-            enemyDelay -= 0.01
+            enemyDelay -= 0.02
         }
         timerEnemy = Timer.scheduledTimer(withTimeInterval: enemyDelay, repeats: false, block: { (Timer) in
             self.addEnemy()

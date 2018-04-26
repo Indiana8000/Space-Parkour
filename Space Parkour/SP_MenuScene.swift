@@ -46,6 +46,7 @@ class MenuScene: SKScene {
     func startGame() {
         let transition = SKTransition.doorsOpenHorizontal(withDuration: 1.3)
         let gScene = GameScene(size: self.size)
+        gScene.scaleMode = .aspectFit
         self.view?.presentScene(gScene, transition: transition)
     }
     
