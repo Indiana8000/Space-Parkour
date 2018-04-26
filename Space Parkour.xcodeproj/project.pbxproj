@@ -41,6 +41,7 @@
 		A1680A002090712C00663B93 /* SP_MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SP_MenuScene.swift; sourceTree = "<group>"; };
 		A1680A03209094F200663B93 /* Broke_For_Free_-_01_-_Night_Owl.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Broke_For_Free_-_01_-_Night_Owl.mp3"; sourceTree = "<group>"; };
 		A17A127D2090F7040062909C /* explosion.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = explosion.wav; sourceTree = "<group>"; };
+		A1D4088B2091CAB1008BC6EE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A1E9AC7D2090987C00D3761D /* sfx_laser1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sfx_laser1.wav; sourceTree = "<group>"; };
 		A1E9AC8020909DB700D3761D /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
 		A1E9AC8120909DB700D3761D /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
@@ -71,6 +72,7 @@
 			children = (
 				A16809E720906F9600663B93 /* Space Parkour */,
 				A16809E620906F9600663B93 /* Products */,
+				A1D4088B2091CAB1008BC6EE /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
