@@ -25,7 +25,7 @@ class GameViewController: UIViewController {
             view.ignoresSiblingOrder = true
             view.showsFPS = true
             view.showsNodeCount = true
-            //view.showsPhysics = true
+            view.showsPhysics = true
 
             let mScene = MenuScene(size: CGSize(width: 320, height: 568))
             mScene.scaleMode = .aspectFit

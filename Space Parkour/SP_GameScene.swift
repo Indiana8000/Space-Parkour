@@ -1,5 +1,5 @@
 //
-//  GameScene.swift
+//  SP_GameScene.swift
 //  Space Parkour
 //
 //  Created by Andreas Kreisl on 25.04.18.
@@ -18,8 +18,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var touchTarget: CGFloat = 0
 
     let spaceshipTexture = SKTexture(imageNamed: "playerShip1_blue")
-    let bulletTexture    = SKTexture(imageNamed: "bullet")
-    let enemyTexture     = SKTexture(imageNamed: "enemyGreen1")
+    let bulletTexture    = SKTexture(imageNamed: "spaceMissiles_040")
+    let enemyTexture     = SKTexture(imageNamed: "meteorBrown_big1")
 
     let background1      = SKSpriteNode(imageNamed: "background")
     let background2      = SKSpriteNode(imageNamed: "background")
@@ -183,7 +183,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         switch contactMask {
         case physicsBodyNumbers.enemyNumber | physicsBodyNumbers.bulletNumber:
             if contactBeginBullet {
-                contactBeginBullet = false
+                //contactBeginBullet = false
                 if (contact.bodyA.categoryBitMask & physicsBodyNumbers.enemyNumber) > 0 {
                     addExplosion(contactPoint: contact.bodyA.node!.position)
                 } else {
@@ -197,7 +197,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         case physicsBodyNumbers.enemyNumber | physicsBodyNumbers.spaceshipNumber:
             if contactBeginPlayer {
-                contactBeginPlayer = false
+                //contactBeginPlayer = false
                 addExplosion(contactPoint: contact.bodyB.node!.position)
                 contact.bodyB.node?.removeFromParent()
                 
@@ -216,7 +216,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                             ]), count: 5))
                         
                         spaceshipDamage.removeFromParent()
-                        spaceshipDamage = SKSpriteNode(imageNamed: "playerShip1_damage\(liveNodes.count)")
+                        spaceshipDamage = SKSpriteNode(imageNamed: String(format: "playerShip1_damage%d", liveNodes.count))
                         spaceshipDamage.zPosition = 3
                         spaceshipDamage.position = spaceship.position
                         self.addChild(spaceshipDamage)
@@ -275,7 +275,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     func addBulletToSpaceship() {
-        let bullet = SKSpriteNode(imageNamed: "bullet")
+        let bullet = SKSpriteNode(imageNamed: "spaceMissiles_040")
         bullet.position = spaceship.position
         bullet.zPosition = 1
         bullet.setScale(0.5)
@@ -283,8 +283,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bullet.physicsBody?.isDynamic = false
         bullet.physicsBody?.categoryBitMask = physicsBodyNumbers.bulletNumber
         bullet.physicsBody?.collisionBitMask = physicsBodyNumbers.emptyNumber
-        //bullet.physicsBody?.contactTestBitMask = physicsBodyNumbers.enemyNumber
+        bullet.physicsBody?.contactTestBitMask = physicsBodyNumbers.enemyNumber
         addChild(bullet)
+        
+        let smoke = SKEmitterNode(fileNamed: "rocketSmoke.sks")!
+        smoke.position.y = -bullet.size.height/2
+        smoke.zPosition = -1
+        smoke.setScale(0.5)
+        bullet.addChild(smoke)
         
         let moveTo = SKAction.moveTo(y: self.size.height + bullet.size.height, duration: 2.4)
         let delete = SKAction.removeFromParent()
@@ -296,8 +302,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addEnemy() {
         timerEnemy.invalidate()
 
-        let enemy = SKSpriteNode(imageNamed: "enemyGreen1")
-        //enemy.setScale(0.15)
+        let enemy = SKSpriteNode(imageNamed: "meteorBrown_big1")
+        enemy.setScale(0.4)
 
         enemy.position = CGPoint(x: CGFloat(arc4random_uniform(UInt32(self.size.width - enemy.size.width)) + UInt32(enemy.size.width / 2.0)), y: self.size.height + enemy.size.height)
         //enemy.zRotation = CGFloat(Double.pi)
@@ -311,7 +317,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let moveTo = SKAction.moveTo(y: -enemy.size.height, duration: enemyDelay)
         let delete = SKAction.removeFromParent()
         enemy.run(SKAction.sequence([moveTo, delete])) {
-            self.updateCurrentScore(points: -1)
+            self.updateCurrentScore(points: -3)
             self.currentScoreLabe.run(
                 SKAction.repeat(SKAction.sequence([
                     SKAction.colorize(with: SKColor.red, colorBlendFactor: 0.5, duration: 0.1),
@@ -320,6 +326,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     , count: 2)
             )
         }
+        
+        let rotate = SKAction.rotate(byAngle: CGFloat(arc4random_uniform(6)) - 3.0, duration: 1)
+        enemy.run(SKAction.repeatForever(rotate))
 
         if enemyDelay > 0.8 {
             enemyDelay -= 0.02
